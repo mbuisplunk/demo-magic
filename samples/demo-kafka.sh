@@ -38,48 +38,25 @@ clear
 # enters interactive mode and allows newly typed command to be executed
 cmd
 
-# put your demo awesomeness here
-if [ ! -d "stuff" ]; then
-  pe "mkdir stuff"
-fi
-
-pe "cd "
 pe "cd /home/ubuntu" 
 pe "git clone https://github.com/leungsteve/realtime_enrichment.git"
 pe "cd realtime_enrichment/otel_yamls"
 pe "python3 -m venv rtapp-workshop"
 pe "source rtapp-workshop/bin/activate"
-
-# print and execute: cd stuff
 pe "helm repo add bitnami https://charts.bitnami.com/bitnami"
-
-# ctl + c support: ctl + c to stop long-running process and continue demo
 pe "helm install kafka --set replicaCount=3 --set metrics.jmx.enabled=true --set metrics.kafka.enabled=true  --set deleteTopicEnable=true bitnami/kafka"
-
-# print and execute: echo 'hello world' > file.txt
 pe "helm install mongodb --set metrics.enabled=true bitnami/mongodb --set global.namespaceOverride=default --set auth.rootUser=root --set auth.rootPassword=splunk --set auth.enabled=false --version 12.1.31"
-
 pe "helm list"
-
 pe "kubectl get pods"
-
-# wait max 3 seconds until user presses
-PROMPT_TIMEOUT=3
-wait
-
-# print and execute immediately: ls -l
-pei "ls -l"
-# print and execute immediately: cat file.txt
-pei "cat file.txt"
-
-# and reset it to manual mode to wait until user presses enter
-PROMPT_TIMEOUT=0
-
-# print only
-p "cat \"something you want to pretend to run\""
-
-# run command behind
-cd .. && rm -rf stuff
+pei "cat kafka.values.yaml"
+pei "cat mongodb.values.yaml"
+pei "cat zookeeper.values.yaml"
+pe "cd /home/ubuntu/realtime_enrichment/otel_yamls/"
+pe "helm repo add splunk-otel-collector-chart https://signalfx.github.io/splunk-otel-collector-chart"
+pe "helm repo update"
+pe "helm install --set provider=' ' --set distro=' ' --set splunkObservability.accessToken=$ACCESS_TOKEN --set clusterName=$clusterName --set splunkObservability.realm=$REALM --set otelCollector.enabled='false' --set splunkObservability.logsEnabled='true' --set gateway.enabled='false' --values kafka.values.yaml --values mongodb.values.yaml --values zookeeper.values.yaml --values alwayson.values.yaml --values k3slogs.yaml --generate-name splunk-otel-collector-chart/splunk-otel-collector"
+pe "helm list"
+pe "kubectl get pods"
 
 # enters interactive mode and allows newly typed command to be executed
 cmd
