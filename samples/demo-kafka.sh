@@ -39,11 +39,7 @@ clear
 cmd
 
 #Need to run export commands and local docker registry
-touch /etc/containers/registries.conf.d/myregistry1.conf 
-
-echo "[[registry]]
-location = "localhost:8000"
-insecure = true" > /etc/containers/registries.conf.d/myregistry.conf
+cp myregistry.conf /etc/containers/registries.conf.d
 
 pe "cd /home/ubuntu" 
 pe "git clone https://github.com/leungsteve/realtime_enrichment.git"
